@@ -31,7 +31,7 @@ To ensure the CPU core operates flawlessly, the project employs a systematic Har
 3. **Integration Test - Datapath (`tb_CPU_Core_Main.v`):** Allows the CPU to run freely through a real Assembly sequence consisting of R-Type operands, memory instructions (Load/Store), and jump instructions (Branch/JAL).
 
 ### Some Simulation Results
-The simulation was performed on **EDA Playground** using the **EPWave** tool.
+The simulation was performed on **EDA Playground(https://www.edaplayground.com/)** using the **EPWave** tool. 
 #### ALU Block Testbench Results
 
 <img width="824" height="764" alt="image" src="https://github.com/user-attachments/assets/ed09307e-1bb0-4ae5-8fe9-de9d0a14d60c" />
@@ -49,3 +49,12 @@ The simulation was performed on **EDA Playground** using the **EPWave** tool.
 <img width="1706" height="379" alt="image" src="https://github.com/user-attachments/assets/cc8af884-aaa6-4e6f-912a-59a2786bf487" />
 
 <img width="518" height="402" alt="image" src="https://github.com/user-attachments/assets/3aacfff9-6b4b-4795-a120-09366748496b" />
+
+** Key Signals Analysis:**
+
+To demonstrate the stability and correctness of the verification environment, critical datapath signals are closely monitored at every rising edge of the clock (`clk`):
+
+* **`W_PC_in` & `W_instruction` (Fetch Path):** The program counter and its corresponding 32-bit machine code. The synchronous transitions of these signals confirm that the Instruction Fetch stage operates smoothly without any timing lags.
+* **`W_opcode` & `W_imm` (Decode Path):** Specific bit fields extracted from the raw instruction. The `W_imm` signal displays the correctly sign-extended immediate value ready to be fed into the execution stage.
+* **`W_is_load` & `W_is_s_instr` (Memory Control):** Control flags for Data Memory access. The fact that these signals assert to `1` independently only during `lb` (Load) or `sb` (Store) instructions proves that the Control Unit successfully identifies and steers memory-bound operations.
+* **`W_rd_valid` (Write-Back Protection):** The write-enable flag for the Register File. This signal automatically drops to `0` during branch (`beq`) or store (`sb`) instructions, effectively protecting the register file from data corruption caused by invalid write-backs.
